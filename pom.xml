@@ -83,6 +83,26 @@
             <version>1.18.38</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Base Stork -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-smallrye-stork</artifactId>
+        </dependency>
+
+        <!-- Eureka Registration Module (compulsory, to appear on the Dashboard) -->
+        <dependency>
+            <groupId>io.smallrye.stork</groupId>
+            <artifactId>stork-service-registration-eureka</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+        <!-- Search Module (?) I don't know... -->
+        <dependency>
+            <groupId>io.smallrye.stork</groupId>
+            <artifactId>stork-service-discovery-eureka</artifactId>
+            <version>3.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>
