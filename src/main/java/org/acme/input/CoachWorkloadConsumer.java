@@ -2,14 +2,12 @@ package org.acme.input;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import lombok.RequiredArgsConstructor;
 import org.acme.domain.UpdateCoachWorkloadRequest;
 import org.acme.logic.CoachWorkloadService;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 
 
 @ApplicationScoped
-//@RequiredArgsConstructor
 public class CoachWorkloadConsumer {
 
     private final CoachWorkloadService service;
