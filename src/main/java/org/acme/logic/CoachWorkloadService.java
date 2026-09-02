@@ -4,17 +4,19 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 import io.smallrye.mutiny.Uni;
 import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
 import org.acme.domain.UpdateCoachWorkloadRequest;
 import org.acme.output.CoachWorkloadRepository;
 
 import java.util.UUID;
+import java.util.logging.Logger;
 
-@Slf4j
 @ApplicationScoped
 public class CoachWorkloadService {
 
     private static final String COACH_WORKLOAD = "cchwld";
+
+    private static final Logger log = Logger.getLogger(CoachWorkloadService.class.getName());
+
 
     private final CoachWorkloadRepository repository;
 
@@ -30,12 +32,7 @@ public class CoachWorkloadService {
         final UUID transactionUuid = UUID.randomUUID();
 
         log.info(
-                "Updating coach workload: coachId={}, year={}, month={}, delta={}, attempt's UUID: {}",
-                request.coachId(),
-                request.year(),
-                request.month(),
-                request.delta(),
-                transactionUuid
+                "Updating coach workload: coachId={}, year={}, month={}, delta={}, attempt's UUID: {}"
         );
 
         return repository.incrementBy(
@@ -47,21 +44,10 @@ public class CoachWorkloadService {
                         request.delta()
                 )
                 .invoke(() -> log.info(
-                        "Successfully updated coach workload: coachId={}, year={}, month={}, delta={}, process's UUID: {}",
-                        request.coachId(),
-                        request.year(),
-                        request.month(),
-                        request.delta(),
-                        transactionUuid
+                        "Successfully updated coach workload: coachId={}, year={}, month={}, delta={}, process's UUID: {}"
                 ))
-                .onFailure().invoke(error -> log.error(
-                        "Failed to update coach workload: coachId={}, year={}, month={}, delta={}, process's UUID: {}",
-                        request.coachId(),
-                        request.year(),
-                        request.month(),
-                        request.delta(),
-                        transactionUuid,
-                        error
+                .onFailure().invoke(error -> log.info(
+                        "Failed to update coach workload: coachId={}, year={}, month={}, delta={}, process's UUID: {}"
                 ));
     }
 
@@ -74,18 +60,15 @@ public class CoachWorkloadService {
         final UUID transactionUuid = UUID.randomUUID();
 
         log.info(
-                "Deleting coach workload: coachId={}, year={}, month={}, attempt's UUID: {}",
-                coachId, year, month, transactionUuid
+                "Deleting coach workload: coachId={}, year={}, month={}, attempt's UUID: {}"
         );
 
         return repository.delete(key(coachId, year, month))
                 .invoke(result -> log.info(
-                        "Successfully deleted coach workload: coachId={}, year={}, month={}, result={}, process's UUID: {}",
-                        coachId, year, month, result, transactionUuid
+                        "Successfully deleted coach workload: coachId={}, year={}, month={}, result={}, process's UUID: {}"
                 ))
-                .onFailure().invoke(error -> log.error(
-                        "Failed to delete coach workload: coachId={}, year={}, month={}, process's UUID: {}",
-                        coachId, year, month, transactionUuid, error
+                .onFailure().invoke(error -> log.info(
+                        "Failed to delete coach workload: coachId={}, year={}, month={}, process's UUID: {}"
                 ));
     }
 
