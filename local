@@ -1,5 +1,5 @@
-./mvnw clean package
-./mvnw package
+./gradlew clean package
+./gradlew package
 
 docker rmi analytics:latest
 
