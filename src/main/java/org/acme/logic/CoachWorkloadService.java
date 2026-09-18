@@ -8,6 +8,7 @@ import org.acme.domain.UpdateCoachWorkloadRequest;
 import org.acme.output.CoachWorkloadRepository;
 
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @ApplicationScoped
@@ -26,14 +27,11 @@ public class CoachWorkloadService {
     }
 
 
-    // todo: cut logs
     @Transactional
     public Uni<Void> update(UpdateCoachWorkloadRequest request) {
         final UUID transactionUuid = UUID.randomUUID();
 
-        log.info(
-                "Updating coach workload: coachId={}, year={}, month={}, delta={}, attempt's UUID: {}"
-        );
+        logUpdating(request, transactionUuid);
 
         return repository.incrementBy(
                         key(
@@ -43,12 +41,55 @@ public class CoachWorkloadService {
                         ),
                         request.delta()
                 )
-                .invoke(() -> log.info(
-                        "Successfully updated coach workload: coachId={}, year={}, month={}, delta={}, process's UUID: {}"
-                ))
-                .onFailure().invoke(error -> log.info(
-                        "Failed to update coach workload: coachId={}, year={}, month={}, delta={}, process's UUID: {}"
-                ));
+                .invoke(() -> logSuccessfullyUpdated(request, transactionUuid))
+                .onFailure().invoke(error -> logUpdateFailure(request, transactionUuid, error));
+    }
+
+    private void logUpdating(
+            UpdateCoachWorkloadRequest request,
+            UUID transactionUuid
+    ) {
+        log.info(String.format(
+                "Updating coach workload: coachId=%d, year=%d, month=%d, delta=%d, attempt's UUID=%s",
+                request.coachId(),
+                request.year(),
+                request.month(),
+                request.delta(),
+                transactionUuid
+        ));
+    }
+
+    private void logSuccessfullyUpdated(
+            UpdateCoachWorkloadRequest request,
+            UUID transactionUuid
+    ) {
+        log.info(String.format(
+                "Successfully updated coach workload: coachId=%d, year=%d, month=%d, delta=%d, process's UUID=%s",
+                request.coachId(),
+                request.year(),
+                request.month(),
+                request.delta(),
+                transactionUuid
+        ));
+    }
+
+    private void logUpdateFailure(
+            UpdateCoachWorkloadRequest request,
+            UUID transactionUuid,
+            Throwable error
+    ) {
+        log.log(
+                Level.SEVERE,
+                String.format(
+                        "Failed to update coach workload: coachId=%d, year=%d, month=%d, delta=%d, process's UUID=%s",
+                        request.coachId(),
+                        request.year(),
+                        request.month(),
+                        request.delta(),
+                        transactionUuid
+                ),
+                error
+        );
     }
 
     public Uni<Integer> get(Long coachId, int year, int month) {
